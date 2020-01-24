@@ -35,18 +35,27 @@ hchart(mpg, "scatter", hcaes(x = displ, y = hwy, group = class))
 
 
 ```{r, cache=TRUE}
+# download data
 tt_data <- tt_load(2018, week = 3)
+
+selected_countries <- c("Brazil", "Argentina", "Paraguay", "Uruguay")
+
+# pre-processing
 global_mortality <-
   tt_data$global_mortality %>%
   select(country, year, `Cardiovascular diseases (%)`, `Cancers (%)`) %>%
-  filter(str_starts(country, "B")) %>%
+  filter(country %in% selected_countries) %>%
   clean_names()
 ```
 
 ```{r}
-# x = year
-# y = cancers_percent
-# group = country
 hchart(global_mortality, "scatter", hcaes(x = year, y = cancers_percent, group = country))
+```
+
+
+
+```{r}
+hchart(global_mortality, "line",
+       hcaes(x = year, y = cancers_percent, group = country))
 ```
 
