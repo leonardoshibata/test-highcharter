@@ -1,0 +1,52 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(highcharter)
+library(tidytuesdayR)
+library(janitor)
+data(diamonds, mpg, package = "ggplot2")
+```
+
+
+```{r}
+glimpse(mpg)
+```
+
+
+
+
+```{r}
+hchart(mpg, "scatter", hcaes(x = displ, y = hwy, group = class))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+```{r, cache=TRUE}
+tt_data <- tt_load(2018, week = 3)
+global_mortality <-
+  tt_data$global_mortality %>%
+  select(country, year, `Cardiovascular diseases (%)`, `Cancers (%)`) %>%
+  filter(str_starts(country, "B")) %>%
+  clean_names()
+```
+
+```{r}
+# x = year
+# y = cancers_percent
+# group = country
+hchart(global_mortality, "scatter", hcaes(x = year, y = cancers_percent, group = country))
+```
+
