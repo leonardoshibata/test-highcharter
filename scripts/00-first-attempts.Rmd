@@ -3,23 +3,17 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-```{r}
+```{r setup}
 library(tidyverse)
 library(highcharter)
 library(tidytuesdayR)
 library(janitor)
+library(treemap)
 data(diamonds, mpg, package = "ggplot2")
 ```
 
 
-```{r}
-glimpse(mpg)
-```
-
-
-
-
-```{r}
+```{r example}
 hchart(mpg, "scatter", hcaes(x = displ, y = hwy, group = class))
 ```
 
@@ -28,11 +22,7 @@ hchart(mpg, "scatter", hcaes(x = displ, y = hwy, group = class))
 
 
 
-
-
-
-
-
+# Global Mortality
 
 ```{r, cache=TRUE}
 # download data
@@ -58,4 +48,71 @@ hchart(global_mortality, "scatter", hcaes(x = year, y = cancers_percent, group =
 hchart(global_mortality, "line",
        hcaes(x = year, y = cancers_percent, group = country))
 ```
+
+
+
+
+
+
+
+
+
+## Brazil
+
+```{r brazil-data}
+brazil_mortality <-
+  tt_data$global_mortality %>%
+  filter(country == "Brazil") %>%
+  clean_names()
+```
+
+```{r pyramid}
+plot_data <- 
+  brazil_mortality %>%
+  filter(year == 2016) %>%
+  pivot_longer(cardiovascular_diseases_percent:last_col(), names_to = "causes", values_to = "percent")
+
+f <- hchart(plot_data, "funnel",
+       hcaes(x = causes, y = percent))
+
+toJSON(f$x$hc_opts, pretty = TRUE, auto_unbox = TRUE)
+
+f
+```
+
+
+```{r}
+p <- hchart(plot_data, "pyramid",
+       hcaes(x = causes, y = percent))
+
+toJSON(p$x$hc_opts, pretty = TRUE, auto_unbox = TRUE)
+
+p
+```
+
+
+
+```{r}
+hc <- hchart(plot_data, "pie",
+       hcaes(x = causes, y = percent))
+
+library(jsonlite)
+toJSON(hc$x$hc_opts, pretty = TRUE, auto_unbox = TRUE)
+
+hc
+```
+
+
+
+```{r hctreemap}
+tm <- treemap(plot_data, index = "causes", vSize = "percent")
+hctreemap(tm)
+```
+
+
+
+```{r hctreemap2}
+hctreemap2(plot_data, group_vars = "causes", size_var = "percent")
+```
+
 
